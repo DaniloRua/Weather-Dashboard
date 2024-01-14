@@ -1,16 +1,10 @@
 
-
-
-
-
-
-
-
-
 $('#search-button').on("click", function (event) {
+  
     var city = $('#search-input').val()
     event.preventDefault()
     getCoordinates(city)
+  $('#search-input').val('')
 
 
 })
@@ -54,30 +48,34 @@ function getMainTemp(lat, lon) {
         .then(function (data) {
             var currentTemp = (data.main.temp + (-273.15)).toFixed(1)
             cityData = [data.name, data.weather[0].icon, data.main.temp, data.wind.speed, data.main.humidity,]
-            console.log(cityData)
-
-
+    
             TodayEl(cityData)
         });
 
 }
 
-
 function TodayEl(data) {
     var cityName = data[0];
     var iconCode = data[1];
     var todayTemp = data[2] +( -273.15)
-    console.log(todayTemp)
     var iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`
-    console.log(cityName)
-    var date = dayjs().format('DD/MMM/YYYY');
-    // var icon = $('<img)').attr('src', iconUrl)
+    console.log(iconUrl)
+    var date = dayjs().format('DD/MM/YYYY');
+    var icon = $('<img>').attr('src',iconUrl)
+    console.log(icon)
 
-     $('#city-date').text(cityName + " " + date )
+     $('#city-date').text(cityName + " " + date + " " )
+     $('#city-date').append(icon)
+     
     $('#temp').text("Temperature: " +  todayTemp.toFixed(1) + " C°")
     $('#wind').text("Wind speed: " +   data[3] + "Km")
     $('#humidity').text("Humidity: " +data[4])
 }
+
+function nextFiveDays(){
+
+}
+
 
 //next five days weather
 
