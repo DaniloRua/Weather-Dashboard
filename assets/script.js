@@ -32,7 +32,14 @@ function getWeather(lat, lon) {
         .then(function (data) {
             console.log(data)
             console.log(data.list[0].main.temp)
-
         });
 }
 
+
+// get the current weather
+//next five days weather 
+
+// create a main card to display the current weather
+//   -- city name + date temp wind and humidity
+//create 5 mini cards to display the next five days 
+//  --each card contain city name, date, temp,wind and humidity

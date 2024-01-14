@@ -1,0 +1,28 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+aside{
+
+    width: 20vh;
+    height: 100vh;
+    border: 1px red solid;
+}
+
+.input-group{
+    display: flex;
+    flex-direction: column;
+    border: 1px rgb(255, 0, 0) solid;
+
+}
+
+#container-main{
+    border: 3px solid orange;
+}
+
+#temps{
+    border: blue solid 2px;
+    height: 50vh;
+}
+
