@@ -74,14 +74,15 @@ function nextFiveDays(data) {
 
     console.log(data)
     for (let i = 0; i < 5; i++) {
-      
+        let nextDaysCards = $(`#card${i + 1}`);
+        nextDaysCards.empty();
         // //add date
         let nextDates = $('<h5>').text(dayjs(data[i].dt_txt).format("DD/MM/YYYY"));
         let nextDatesTemp =$('<p>').text("Temperature: " +  (data[i].main.temp + (-273.15)).toFixed(1) + "°C");
         let nextDatesHumidity = $('<p>').text("Wind speed: " + data[i].wind.speed + "Kph");
         let nextDatesWind = $('<p>').text("Humidity: " +data[i].main.humidity + "%");
             
-        let nextDaysCards = $(`#card${i + 1}`);
+        
         nextDaysCards.append(nextDates, nextDatesTemp, nextDatesHumidity,nextDatesWind);
 
 
@@ -89,4 +90,6 @@ function nextFiveDays(data) {
 
 }
 
-
+$(document).ready(function () {
+    getCoordinates('London');
+});
