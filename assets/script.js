@@ -1,12 +1,10 @@
-
 $('#search-button').on("click", function (event) {
-  
+
     var city = $('#search-input').val()
-    event.preventDefault()
+
     getCoordinates(city)
-  $('#search-input').val('')
-
-
+    $('#search-input').val('')
+    event.preventDefault()
 })
 
 function getCoordinates(city) {
@@ -18,65 +16,77 @@ function getCoordinates(city) {
         .then(function (data) {
             lat = data[0].lat;
             lon = data[0].lon;
-
-            getWeather(lat, lon)
+            getFiveDays(lat, lon)
         });
-
 }
 
-function getWeather(lat, lon) {
+function getFiveDays(lat, lon) {
 
-    var getFiveDays = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=059158fd829c06a2a0fee4443308c7ba`
+    var fiveDaysAPI = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=059158fd829c06a2a0fee4443308c7ba`
 
     getMainTemp(lat, lon)
-    fetch(getFiveDays)
+    fetch(fiveDaysAPI)
         .then(function (response) {
             return response.json();
         })
         .then(function (data) {
+            // collection of the next five days data
+
+
+
+            var fiveDaysData = [data.list[7], data.list[15], data.list[23], data.list[31], data.list[39]]
+            console.log(data)
+            nextFiveDays(fiveDaysData)
+
 
         });
 }
 
 function getMainTemp(lat, lon) {
-    var api = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=059158fd829c06a2a0fee4443308c7ba`
+    var API = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=059158fd829c06a2a0fee4443308c7ba`
 
-    fetch(api)
+    fetch(API)
         .then(function (response) {
             return response.json();
         })
         .then(function (data) {
-            var currentTemp = (data.main.temp + (-273.15)).toFixed(1)
             cityData = [data.name, data.weather[0].icon, data.main.temp, data.wind.speed, data.main.humidity,]
-    
             TodayEl(cityData)
         });
-
 }
 
 function TodayEl(data) {
-    var cityName = data[0];
-    var iconCode = data[1];
-    var todayTemp = data[2] +( -273.15)
-    var iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`
-    console.log(iconUrl)
-    var date = dayjs().format('DD/MM/YYYY');
-    var icon = $('<img>').attr('src',iconUrl)
-    console.log(icon)
+    let cityName = data[0];
+    let iconCode = data[1];
+    let todayTemp = data[2] + (-273.15)
+    let iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`
 
-     $('#city-date').text(cityName + " " + date + " " )
-     $('#city-date').append(icon)
-     
-    $('#temp').text("Temperature: " +  todayTemp.toFixed(1) + " C°")
-    $('#wind').text("Wind speed: " +   data[3] + "Km")
-    $('#humidity').text("Humidity: " +data[4])
+    let date = dayjs().format('DD/MM/YYYY');
+    let icon = $('<img>').attr('src', iconUrl)
+    $('#city-date').text(cityName + " " + date + " ")
+    $('#city-date').append(icon)
+    $('#temp').text("Temperature: " + todayTemp.toFixed(1) + " C°")
+    $('#wind').text("Wind speed: " + data[3] + "Kph")
+    $('#humidity').text("Humidity: " + data[4] + "%")
 }
 
-function nextFiveDays(){
+function nextFiveDays(data) {
+
+    console.log(data)
+    for (let i = 0; i < 5; i++) {
+      
+        // //add date
+        let nextDates = $('<h5>').text(dayjs(data[i].dt_txt).format("DD/MM/YYYY"));
+        let nextDatesTemp =$('<p>').text("Temperature: " +  (data[i].main.temp + (-273.15)).toFixed(1) + "°C");
+        let nextDatesHumidity = $('<p>').text("Wind speed: " + data[i].wind.speed + "Kph");
+        let nextDatesWind = $('<p>').text("Humidity: " +data[i].main.humidity + "%");
+            
+        let nextDaysCards = $(`#card${i + 1}`);
+        nextDaysCards.append(nextDates, nextDatesTemp, nextDatesHumidity,nextDatesWind);
+
+
+    }
 
 }
 
 
-//next five days weather
-
-//populate the cards
