@@ -1,12 +1,11 @@
-const history = [];
+let history = [];
 
 $('#search-button').on("click", function (event) {
     event.preventDefault();
     var city = $('#search-input').val().trim();
     if (city !== '') {
         getCoordinates(city);
-        console.log(city);
-        renderHistory(city);
+        addHistoryButton(city);
         $('#search-input').val('');
     } else {
         alert('Please enter a city name');
@@ -27,9 +26,7 @@ function getCoordinates(city) {
 }
 
 function getFiveDays(lat, lon) {
-
     var fiveDaysAPI = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=059158fd829c06a2a0fee4443308c7ba`
-
     getMainTemp(lat, lon)
     fetch(fiveDaysAPI)
         .then(function (response) {
@@ -70,7 +67,6 @@ function TodayEl(data) {
 }
 
 function nextFiveDays(data) {
-
     for (let i = 0; i < 5; i++) {
         let nextDaysCards = $(`#card${i + 1}`);
         nextDaysCards.empty();
@@ -88,30 +84,39 @@ $(document).ready(function () {
     getCoordinates('London');
 });
 
-function renderHistory(city) {
-
-    if (city.trim() !== '') {
+function addHistoryButton(city) {
 
         history.unshift(city);
+        localStorage.setItem('weatherAppHistory', JSON.stringify(history));
         $('#history').empty();
-        if (history.length > 2) {
+        if (history.length > 10) {
             history.pop();
         }
+        renderHistorybuttons()
+}
 
-        for (let i = 0; i < history.length; i++) {
-            const a = $("<button>");
-            a.addClass("btn-secondary");
-            a.attr("data-name", history[i]);
-            a.text(history[i]);
-
-            if (history[i].trim() !== '') {
-
-                a.click(function () {
-                    getCoordinates(history[i]);
-                });
-            }
-
+function renderHistorybuttons(){
+    for (let i = 0; i < history.length; i++) {
+        const a = $("<button>");
+        a.addClass("btn-secondary round-1");
+        a.attr("data-name", history[i]);
+        a.text(history[i]);
+            a.click(function () {
+                getCoordinates(history[i]);
+            });
             $("#history").append(a);
         }
-    }
 }
+
+//load history from localstorage
+function loadHistoryLocalStorage() {
+    let storedHistory = localStorage.getItem('weatherAppHistory');
+        history = JSON.parse(storedHistory);
+       renderHistorybuttons();    
+}
+
+//call function when page is loaded
+$(document).ready(function () {
+    loadHistoryLocalStorage();
+});
+
