@@ -1,4 +1,5 @@
-let history = [];
+let history = ['london'];
+
 
 $('#search-button').on("click", function (event) {
     event.preventDefault();
@@ -27,6 +28,7 @@ function getCoordinates(city) {
 
 function getFiveDays(lat, lon) {
     var fiveDaysAPI = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=059158fd829c06a2a0fee4443308c7ba`
+
     getMainTemp(lat, lon)
     fetch(fiveDaysAPI)
         .then(function (response) {
@@ -85,34 +87,35 @@ $(document).ready(function () {
 });
 
 function addHistoryButton(city) {
-
-        history.unshift(city);
-        localStorage.setItem('weatherAppHistory', JSON.stringify(history));
-        $('#history').empty();
-        if (history.length > 10) {
-            history.pop();
-        }
-        renderHistorybuttons()
+    history.unshift(city);
+    localStorage.setItem('weatherAppHistory', JSON.stringify(history));
+    $('#history').empty();
+    if (history.length > 10) {
+        history.pop();
+    }
+    renderHistorybuttons()
 }
 
-function renderHistorybuttons(){
-    for (let i = 0; i < history.length; i++) {
-        const a = $("<button>");
-        a.addClass("btn-secondary round-1");
-        a.attr("data-name", history[i]);
-        a.text(history[i]);
+function renderHistorybuttons() {
+    if (history !== '') {
+        for (let i = 0; i < history.length; i++) {
+            const a = $("<button>");
+            a.addClass("btn-secondary round-1");
+            a.attr("data-name", history[i]);
+            a.text(history[i]);
             a.click(function () {
                 getCoordinates(history[i]);
             });
             $("#history").append(a);
         }
+    }
 }
 
 //load history from localstorage
 function loadHistoryLocalStorage() {
     let storedHistory = localStorage.getItem('weatherAppHistory');
-        history = JSON.parse(storedHistory);
-       renderHistorybuttons();    
+    history = JSON.parse(storedHistory);
+    renderHistorybuttons();
 }
 
 //call function when page is loaded
@@ -120,9 +123,8 @@ $(document).ready(function () {
     loadHistoryLocalStorage();
 });
 
-//delte history buttons
-$('#delete-history').on('click', function(){
+$('#delete-history').on('click', function () {
     localStorage.removeItem('weatherAppHistory');
-    history = []; 
-    $('#history').empty(); 
+    history = [];
+    $('#history').empty();
 })
