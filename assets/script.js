@@ -120,3 +120,9 @@ $(document).ready(function () {
     loadHistoryLocalStorage();
 });
 
+//delte history buttons
+$('#delete-history').on('click', function(){
+    localStorage.removeItem('weatherAppHistory');
+    history = []; 
+    $('#history').empty(); 
+})
