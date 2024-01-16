@@ -1,11 +1,17 @@
+const history = [];
+
 $('#search-button').on("click", function (event) {
-
-    var city = $('#search-input').val()
-
-    getCoordinates(city)
-    $('#search-input').val('')
-    event.preventDefault()
-})
+    event.preventDefault();
+    var city = $('#search-input').val().trim();
+    if (city !== '') {
+        getCoordinates(city);
+        console.log(city);
+        renderHistory(city);
+        $('#search-input').val('');
+    } else {
+        alert('Please enter a city name');
+    }
+});
 
 function getCoordinates(city) {
     let queryURL = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=5&appid=059158fd829c06a2a0fee4443308c7ba`
@@ -31,14 +37,8 @@ function getFiveDays(lat, lon) {
         })
         .then(function (data) {
             // collection of the next five days data
-
-
-
             var fiveDaysData = [data.list[7], data.list[15], data.list[23], data.list[31], data.list[39]]
-            console.log(data)
             nextFiveDays(fiveDaysData)
-
-
         });
 }
 
@@ -60,7 +60,6 @@ function TodayEl(data) {
     let iconCode = data[1];
     let todayTemp = data[2] + (-273.15)
     let iconUrl = `https://openweathermap.org/img/wn/${iconCode}@2x.png`
-
     let date = dayjs().format('DD/MM/YYYY');
     let icon = $('<img>').attr('src', iconUrl)
     $('#city-date').text(cityName + " " + date + " ")
@@ -72,24 +71,47 @@ function TodayEl(data) {
 
 function nextFiveDays(data) {
 
-    console.log(data)
     for (let i = 0; i < 5; i++) {
         let nextDaysCards = $(`#card${i + 1}`);
         nextDaysCards.empty();
         // //add date
         let nextDates = $('<h5>').text(dayjs(data[i].dt_txt).format("DD/MM/YYYY"));
-        let nextDatesTemp =$('<p>').text("Temperature: " +  (data[i].main.temp + (-273.15)).toFixed(1) + "°C");
+        let nextDatesTemp = $('<p>').text("Temperature: " + (data[i].main.temp + (-273.15)).toFixed(1) + "°C");
         let nextDatesHumidity = $('<p>').text("Wind speed: " + data[i].wind.speed + "Kph");
-        let nextDatesWind = $('<p>').text("Humidity: " +data[i].main.humidity + "%");
-            
-        
-        nextDaysCards.append(nextDates, nextDatesTemp, nextDatesHumidity,nextDatesWind);
-
-
+        let nextDatesWind = $('<p>').text("Humidity: " + data[i].main.humidity + "%");
+        nextDaysCards.append(nextDates, nextDatesTemp, nextDatesHumidity, nextDatesWind);
     }
-
 }
 
+//trigger the example of search
 $(document).ready(function () {
     getCoordinates('London');
 });
+
+function renderHistory(city) {
+
+    if (city.trim() !== '') {
+
+        history.unshift(city);
+        $('#history').empty();
+        if (history.length > 2) {
+            history.pop();
+        }
+
+        for (let i = 0; i < history.length; i++) {
+            const a = $("<button>");
+            a.addClass("btn-secondary");
+            a.attr("data-name", history[i]);
+            a.text(history[i]);
+
+            if (history[i].trim() !== '') {
+
+                a.click(function () {
+                    getCoordinates(history[i]);
+                });
+            }
+
+            $("#history").append(a);
+        }
+    }
+}
